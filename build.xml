@@ -1,0 +1,27 @@
+<project name="rel_channel" default="build" basedir=".">
+
+  <target name="init" description="Creates the classes directory">
+    <mkdir dir="classes/" />
+    <mkdir dir="dist/" />
+  </target>
+
+  <target name="build" depends="init" description="Compiles the source code">
+    <javac includeantruntime="false" srcdir="src/"
+	   includes="**/*.java" destdir="classes" />
+  </target>
+
+  <target name="jar" depends="build" description="Builds the jar file">
+    <jar destfile="dist/goas.jar">
+      <fileset dir="classes"/>
+      <manifest>
+	<attribute name="Main-Class" value="Test"/>
+      </manifest>
+    </jar>
+  </target>
+    
+  <target name="clean" description="Removes all class files">
+    <delete dir="classes/" />
+    <delete dir="dist/" />
+  </target>
+
+</project>
