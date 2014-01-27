@@ -2,6 +2,7 @@
 
   <target name="init" description="Creates the classes directory">
     <mkdir dir="dist/" />
+    <mkdir dir="classes/edu/purdue/cs505/" />
   </target>
 
   <target name="build" depends="init" description="Compiles the source code">
