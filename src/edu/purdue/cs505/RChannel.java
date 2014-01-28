@@ -15,15 +15,16 @@ public class RChannel implements ReliableChannel {
     public void init(String destinationIP, int destinationPort) {
         int dest = destinationPort == (6666+id) ? 6667 : 6666;
         sThread = new SendThread(destinationIP, dest);
+        rThread = new ReceiveThread(6666+id);
+        sThread.run();
     }
     
     public void rsend(Message m) {
-        sThread.run((RMessage)m);
+        // put message m in buffer with timed out value
     }
     
     public void rlisten(ReliableChannelReceiver rc) {
-        this.rThread = new ReceiveThread(6666+id);
-        this.rThread.start();
+        rThread.start();
     }
     
     public void halt() {

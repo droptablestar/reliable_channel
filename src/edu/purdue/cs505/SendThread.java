@@ -22,12 +22,15 @@ public class SendThread extends Thread {
 
     public void run(RMessage message) {
         try {
-            System.out.println("Client: " + destIP + " " + destPort);
-            byte[] buf = new byte[256];
-            buf = (message.getMessageContents()).getBytes();
-            packet = new DatagramPacket(buf, buf.length, destIP, destPort);
-            socket.send(packet);
-            System.out.println("client FIN.");
+            // loop over timeout buffer
+            // send anything timed out
+            
+            // System.out.println("Client: " + destIP + " " + destPort);
+            // byte[] buf = new byte[256];
+            // buf = (message.getMessageContents()).getBytes();
+            // packet = new DatagramPacket(buf, buf.length, destIP, destPort);
+            // socket.send(packet);
+            // System.out.println("client FIN.");
         } catch(IOException e) {
             System.err.println("CLIENT -- packet send error: " + e);
             System.exit(1);

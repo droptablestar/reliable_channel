@@ -9,8 +9,12 @@ public class ReceiveThread extends Thread {
     byte[] buf;
     String msg;
     int portNumber;
+    RChannelReceiver rcr;
     
-    ReceiveThread(int portNumber) { this.portNumber = portNumber; } 
+    ReceiveThread(int portNumber) {
+        this.portNumber = portNumber;
+        rcr = new RChannelReceiver();
+    }
     
     public void run() {
         try {
@@ -19,8 +23,9 @@ public class ReceiveThread extends Thread {
             buf = new byte[256];
             packet = new DatagramPacket(buf, buf.length);
             socket.receive(packet);
+            // if (!timeout) rcr.rreceive(message)
             msg = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("Server: " + msg);
+            System.out.println("MSG: " + msg);
         } catch (IOException e) {
             System.err.println("Init error: ServerThread()");
             System.err.println(e);
