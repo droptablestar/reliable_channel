@@ -21,6 +21,7 @@ public class RChannel implements ReliableChannel {
     
     public void rsend(Message m) {
         // put message m in buffer with timed out value
+        
     }
     
     public void rlisten(ReliableChannelReceiver rcr) {
