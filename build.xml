@@ -11,16 +11,17 @@
   </target>
 
   <target name="jar" depends="build" description="Builds the jar file">
-    <jar destfile="dist/goas.jar">
+    <jar destfile="dist/rchannel.jar">
       <fileset dir="classes"/>
       <manifest>
-	<attribute name="Main-Class" value="edu.purdue.cs505.Test"/>
+	<attribute name="Main-Class" value="edu.purdue.cs505.Node"/>
       </manifest>
     </jar>
   </target>
     
   <target name="clean" description="Removes all class files">
     <delete dir="dist/" />
+    <delete dir="classes/" />
   </target>
 
 </project>
