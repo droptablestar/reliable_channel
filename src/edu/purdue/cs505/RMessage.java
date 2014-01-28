@@ -5,10 +5,10 @@ import java.io.*;
 public class RMessage implements Message {
     public static final int ACK = 0x00;
 
-    public int timeout;
+    public long timeout;
     private String message;
 
-    public RMessage(int timeout, String message) {
+    public RMessage(long timeout, String message) {
         this.timeout = timeout;
         this.message = message;
     }
