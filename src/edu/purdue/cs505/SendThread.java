@@ -20,20 +20,20 @@ public class SendThread extends Thread {
         }
     }
 
-    public void run(RMessage message) {
-        try {
-            // loop over timeout buffer
-            // send anything timed out
+    public void run() {
+        // try {
+        //     // loop over timeout buffer
+        //     // send anything timed out
             
-            // System.out.println("Client: " + destIP + " " + destPort);
-            // byte[] buf = new byte[256];
-            // buf = (message.getMessageContents()).getBytes();
-            // packet = new DatagramPacket(buf, buf.length, destIP, destPort);
-            // socket.send(packet);
-            // System.out.println("client FIN.");
-        } catch(IOException e) {
-            System.err.println("CLIENT -- packet send error: " + e);
-            System.exit(1);
-        }
+        //     System.out.println("Client: " + destIP + " " + destPort);
+        //     byte[] buf = new byte[256];
+        //     buf = (message.getMessageContents()).getBytes();
+        //     packet = new DatagramPacket(buf, buf.length, destIP, destPort);
+        //     socket.send(packet);
+        //     System.out.println("client FIN.");
+        // } catch(IOException e) {
+        //     System.err.println("CLIENT -- packet send error: " + e);
+        //     System.exit(1);
+        // }
     }
 }

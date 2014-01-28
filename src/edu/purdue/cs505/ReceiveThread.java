@@ -16,7 +16,7 @@ public class ReceiveThread extends Thread {
         rcr = new RChannelReceiver();
     }
     
-    public void run() {
+    public void run(RChannelReceiver rcr) {
         try {
             System.out.println("Server: " + portNumber);
             this.socket = new DatagramSocket(portNumber);

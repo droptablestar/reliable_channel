@@ -23,8 +23,8 @@ public class RChannel implements ReliableChannel {
         // put message m in buffer with timed out value
     }
     
-    public void rlisten(ReliableChannelReceiver rc) {
-        rThread.start();
+    public void rlisten(ReliableChannelReceiver rcr) {
+        rThread.run((RChannelReceiver)rcr);
     }
     
     public void halt() {
