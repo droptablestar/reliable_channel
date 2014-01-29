@@ -10,7 +10,8 @@ public class RChannel implements ReliableChannel {
     public ReceiveThread rThread;
     public SendThread sThread;
 
-    public List<Integer> ackList;
+    public List<RMessage> ackList;
+    public List<RMessage> toAck;
     public PriorityQueue<RMessage> messageQueue;
 
     private int id;
@@ -18,13 +19,15 @@ public class RChannel implements ReliableChannel {
     public RChannel(int id) {
         Comparator<RMessage> comparator = new RMessageComparator();
         messageQueue = new PriorityQueue<RMessage>(10, comparator);
-        ackList = Collections.synchronizedList(new ArrayList<Integer>());
+        ackList = Collections.synchronizedList(new ArrayList<RMessage>());
+        toAck = Collections.synchronizedList(new ArrayList<RMessage>());
         this.id = id;
     }
 
     public void init(String destinationIP, int destinationPort) {
         int dest = destinationPort == (6666+id) ? 6667 : 6666;
-        sThread = new SendThread(destinationIP, dest, messageQueue, ackList);
+        sThread = new SendThread(destinationIP, dest, messageQueue,
+                                 ackList, toAck);
         sThread.start();
     }
     
@@ -35,7 +38,7 @@ public class RChannel implements ReliableChannel {
     
     public void rlisten(ReliableChannelReceiver rcr) {
         rThread = new ReceiveThread(6666 + this.id, (RChannelReceiver)rcr,
-                                    ackList);
+                                    ackList, toAck);
         rThread.start();
     }
     

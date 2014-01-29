@@ -4,13 +4,15 @@ import java.io.*;
 import java.net.*;
 import java.util.PriorityQueue;
 import java.util.List;
+import java.util.Iterator;
 
 public class SendThread extends Thread {
     /** amount of time (in ms) to wait before resending a message */
     private final long TIMEOUT = 1000;
     
     private PriorityQueue<RMessage> messageQueue;
-    private List<Integer> ackList;
+    private List<RMessage> ackList;
+    private List<RMessage> toAck;
     
     private DatagramSocket socket;
     private InetAddress destIP;
@@ -20,10 +22,11 @@ public class SendThread extends Thread {
     
     public SendThread(String destIP, int destPort,
                       PriorityQueue<RMessage> messageQueue,
-                      List<Integer> ackList) {
+                      List<RMessage> ackList, List<RMessage> toAck) {
         this.stopped = false;
         this.messageQueue = messageQueue;
         this.ackList = ackList;
+        this.toAck = toAck;
         this.destPort = destPort;
         
         try {
@@ -45,17 +48,30 @@ public class SendThread extends Thread {
             while (msg != null && (now - msg.timeout) >= TIMEOUT) {
                 // send message, create new message, and put it back in queue
                 msg = messageQueue.poll();
+
+                // message was already ACK'd. don't resend.
+                if (ackList.remove(msg)) continue;
+                
                 send(msg);
-                messageQueue.offer(new RMessage(msg.getMessageContents()));
+                RMessage newMsg = new RMessage();
+                newMsg.setMessageContents(msg.getMessageContents());
+                messageQueue.offer(newMsg);
                 msg = messageQueue.peek();
-                /* TODO: check to see if this sequence number is in the ACK
-                   list. if it is just discard. might want to sort the ACK list
-                   to allow quicker searching.
-                */
+            }
+            int size = toAck.size();
+            RMessage[] tmpToAck = toAck.toArray(new RMessage[]{});
+            /* TODO: send ACKs. they are stored in toAck. */
+            for (int i=0; i<size; i++) {
+                RMessage ack = new RMessage(tmpToAck[i].getMessageID());
+                send(ack);
+                toAck.remove(tmpToAck[i]);
             }
         }
     } // run()
 
+    /**
+     * Sets a boolean in the thread to exit the run() loop
+     */
     public void kill() {
         this.stopped = true;
     } // kill()
@@ -68,6 +84,8 @@ public class SendThread extends Thread {
     private void send(RMessage msg) {
         try {
             String message = msg.getMessageContents();
+            // System.out.print("sending: ");
+            // msg.printMsg();
             byte[] buf = new byte[message.length()];
             buf = message.getBytes();
             DatagramPacket packet =
