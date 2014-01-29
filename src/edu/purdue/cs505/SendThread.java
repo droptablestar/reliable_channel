@@ -60,6 +60,11 @@ public class SendThread extends Thread {
         this.stopped = true;
     } // kill()
 
+    /**
+     * Sends a message.
+     *
+     * @param msg message to be sent
+     */
     private void send(RMessage msg) {
         try {
             String message = msg.getMessageContents();

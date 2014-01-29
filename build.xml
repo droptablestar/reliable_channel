@@ -19,9 +19,15 @@
     </jar>
   </target>
     
-  <target name="clean" description="Removes all class files">
+  <target name="doc" description="Produces the Java documentation">
+    <mkdir dir="docs"/>
+    <javadoc sourcepath="src/" destdir="docs" access="private" />
+  </target>
+
+<target name="clean" description="Removes all class files">
     <delete dir="dist/" />
     <delete dir="classes/" />
+    <delete dir="docs/" />
   </target>
 
 </project>
