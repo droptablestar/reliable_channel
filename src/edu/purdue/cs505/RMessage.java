@@ -20,4 +20,9 @@ public class RMessage implements Message {
     public int compare(RMessage m1, RMessage m2) {
         return (int)(m1.timeout - m2.timeout);
     }
+
+    // TODO: return the ID for this message
+    public int getMessageID(RMessage msg) {
+        return 0;
+    }
 }

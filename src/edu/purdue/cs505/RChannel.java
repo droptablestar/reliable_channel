@@ -1,29 +1,41 @@
 package edu.purdue.cs505;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
 public class RChannel implements ReliableChannel {
     public ReceiveThread rThread;
     public SendThread sThread;
-    
+
+    public List<Integer> ackList;
+    public PriorityQueue<RMessage> messageQueue;
+
     private int id;
     
     public RChannel(int id) {
+        Comparator<RMessage> comparator = new RMessageComparator();
+        messageQueue = new PriorityQueue<RMessage>(10, comparator);
+        ackList = Collections.synchronizedList(new ArrayList<Integer>());
         this.id = id;
     }
 
     public void init(String destinationIP, int destinationPort) {
         int dest = destinationPort == (6666+id) ? 6667 : 6666;
-        sThread = new SendThread(destinationIP, dest);
-        
+        sThread = new SendThread(destinationIP, dest, messageQueue, ackList);
         sThread.start();
     }
     
     public void rsend(Message m) {
         // put message m in buffer with timed out value.
-        sThread.messageQueue.put((RMessage)m);
+        messageQueue.offer((RMessage)m);
     }
     
     public void rlisten(ReliableChannelReceiver rcr) {
-        rThread = new ReceiveThread(6666 + this.id, (RChannelReceiver)rcr);
+        rThread = new ReceiveThread(6666 + this.id, (RChannelReceiver)rcr,
+                                    ackList);
         rThread.start();
     }
     
