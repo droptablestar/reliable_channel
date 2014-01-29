@@ -4,12 +4,9 @@ import java.io.*;
 import java.net.*;
 
 public class ReceiveThread extends Thread {
-    DatagramSocket socket;
-    DatagramPacket packet;
-    byte[] buf;
-    String msg;
-    int portNumber;
-    RChannelReceiver rcr;
+    private DatagramSocket socket;
+    private int portNumber;
+    private RChannelReceiver rcr;
     
     public ReceiveThread(int portNumber, RChannelReceiver rcr) {
         this.portNumber = portNumber;
@@ -17,20 +14,24 @@ public class ReceiveThread extends Thread {
     }
     
     public void run() {
+        System.out.println("Receiver: " + portNumber);
         try {
-            System.out.println("Server: " + portNumber);
             this.socket = new DatagramSocket(portNumber);
-            buf = new byte[256];
-            packet = new DatagramPacket(buf, buf.length);
-            socket.receive(packet);
-            // if (!timeout) rcr.rreceive(message)
-            msg = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("MSG: " + msg);
+            while (true) {
+                byte[] buf = new byte[65536];
+                DatagramPacket packet =
+                    new DatagramPacket(buf, buf.length);
+                socket.receive(packet);
+                // if (!timeout) rcr.rreceive(message)
+                String msg =
+                    new String(packet.getData(), 0, packet.getLength());
+                System.out.println("received MSG: " + msg);
+            }
         } catch (IOException e) {
             System.err.println("Init error: ServerThread()");
             System.err.println(e);
             System.exit(1);
         }
-        System.out.println("server FIN.");
+        System.out.println("receiver FIN.");
     }
 }

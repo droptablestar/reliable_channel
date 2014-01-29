@@ -11,7 +11,7 @@ public class Node {
         int port = Integer.parseInt(args[1]);
         RChannel channel = new RChannel(port);
         channel.init(args[0], 6666);
-        // channel.rlisten(rcr);
+        channel.rlisten(rcr);
         
         // create message with timeou value of current system time.
         RMessage msg0 = new RMessage("msg0: " + (6666 + port));
@@ -31,11 +31,13 @@ public class Node {
             System.out.println(msg.timeout + " : " + msg.getMessageContents());
         }
         System.out.println("main FIN.");
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(System.in));
+
         try {
-            Thread.sleep(1000);
-            System.out.println("Awake.");
-        } catch(InterruptedException e) {
-            System.out.println("HFDS:");
+            br.readLine();
+        } catch(IOException e) {
+            System.err.println("IO err: " + e);
         }
         channel.halt();
     }

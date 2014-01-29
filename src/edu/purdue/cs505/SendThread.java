@@ -12,7 +12,6 @@ public class SendThread extends Thread {
     public Comparator<RMessage> comparator;
 
     private DatagramSocket socket;
-    private DatagramPacket packet;
     private InetAddress destIP;
     private int destPort;
 
@@ -29,7 +28,7 @@ public class SendThread extends Thread {
             this.destPort = destPort;
             socket = new DatagramSocket();
         } catch(IOException e) {
-            System.err.println("CLIENT -- Host name error: " + e);
+            System.err.println("SENDER -- Host name error: " + e);
             System.exit(1);
         }
     }
@@ -37,24 +36,31 @@ public class SendThread extends Thread {
     public void run() {
         while (!stopped) {
             RMessage msg = messageQueue.peek();
-            // long now = System.
-            // while (msg != null && 
+            long now = System.currentTimeMillis();
+            while (msg != null && (now - msg.timeout) < TIMEOUT) {
+                // send message, create new message, and put it back in queue
+                msg = messageQueue.poll();
+                send(msg);
+                messageQueue.put(new RMessage(msg.getMessageContents()));
+                msg = messageQueue.peek();
+            }
         }
-        
-        // try {
-        //     // loop over timeout buffer
-        //     // send anything timed out
-            
-        //     System.out.println("Client: " + destIP + " " + destPort);
-        //     byte[] buf = new byte[256];
-        //     buf = (message.getMessageContents()).getBytes();
-        //     packet = new DatagramPacket(buf, buf.length, destIP, destPort);
-        //     socket.send(packet);
-        //     System.out.println("client FIN.");
-        // } catch(IOException e) {
-        //     System.err.println("CLIENT -- packet send error: " + e);
-        //     System.exit(1);
-        // }
     }
+
     public void kill() { this.stopped = true; }
+
+    private void send(RMessage msg) {
+        try {
+            String message = msg.getMessageContents();
+            byte[] buf = new byte[message.length()];
+            buf = message.getBytes();
+            DatagramPacket packet =
+                new DatagramPacket(buf, buf.length, destIP, destPort);
+            // System.out.println("Sending to: " + destPort);
+            socket.send(packet);
+        } catch(IOException e) {
+            System.err.println("SENDER -- packet send error: " + e);
+            System.exit(1);
+        }
+    }
 }
