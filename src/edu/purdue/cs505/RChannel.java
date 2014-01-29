@@ -1,12 +1,10 @@
 package edu.purdue.cs505;
 
-import java.io.*;
-import java.net.*;
-
 public class RChannel implements ReliableChannel {
-    ReceiveThread rThread;
-    SendThread sThread;
-    int id;
+    public ReceiveThread rThread;
+    public SendThread sThread;
+    
+    private int id;
     
     public RChannel(int id) {
         this.id = id;
@@ -15,21 +13,26 @@ public class RChannel implements ReliableChannel {
     public void init(String destinationIP, int destinationPort) {
         int dest = destinationPort == (6666+id) ? 6667 : 6666;
         sThread = new SendThread(destinationIP, dest);
-        rThread = new ReceiveThread(6666+id);
-        sThread.run();
+        
+        sThread.start();
     }
     
     public void rsend(Message m) {
-        // put message m in buffer with timed out value
-        RMessage msg = new RMessage(System.currentTimeMillis(),
-                                    m.getMessageContents());
+        // put message m in buffer with timed out value.
+        sThread.messageQueue.put((RMessage)m);
     }
     
     public void rlisten(ReliableChannelReceiver rcr) {
-        rThread.run((RChannelReceiver)rcr);
+        rThread = new ReceiveThread(6666 + this.id, (RChannelReceiver)rcr);
+        rThread.start();
     }
     
     public void halt() {
-
+        sThread.kill();
+        try {
+            sThread.join();
+        } catch(InterruptedException e) {
+            System.err.println("halt() " + e);
+        }
     }
 }

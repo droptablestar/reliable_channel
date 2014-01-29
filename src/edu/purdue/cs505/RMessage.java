@@ -1,7 +1,5 @@
 package edu.purdue.cs505;
 
-import java.io.*;
-
 public class RMessage implements Message {
     public static final int ACK = 0x00;
 
@@ -17,5 +15,9 @@ public class RMessage implements Message {
 
     public void setMessageContents(String contents) {
         this.message = contents;
+    }
+
+    public int compare(RMessage m1, RMessage m2) {
+        return (int)(m1.timeout - m2.timeout);
     }
 }

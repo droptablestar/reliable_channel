@@ -2,14 +2,28 @@ package edu.purdue.cs505;
 
 import java.io.*;
 import java.net.*;
+import java.util.Comparator;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class SendThread extends Thread {
-    DatagramSocket socket;
-    DatagramPacket packet;
-    InetAddress destIP;
-    int destPort;
+    private final long TIMEOUT = 1000;
     
-    SendThread(String destIP, int destPort) {
+    public PriorityBlockingQueue<RMessage> messageQueue;
+    public Comparator<RMessage> comparator;
+
+    private DatagramSocket socket;
+    private DatagramPacket packet;
+    private InetAddress destIP;
+    private int destPort;
+
+    private boolean stopped;
+    
+    public SendThread(String destIP, int destPort) {
+        this.stopped = false;
+        
+        comparator = new RMessageComparator();
+        messageQueue = new PriorityBlockingQueue<RMessage>(10, comparator);
+
         try {
             this.destIP = InetAddress.getByName(destIP);
             this.destPort = destPort;
@@ -21,6 +35,16 @@ public class SendThread extends Thread {
     }
 
     public void run() {
+        while (!stopped) {
+            System.out.println("CHECK! " + stopped);
+            try {
+                Thread.sleep(1000);
+            } catch(InterruptedException e) {
+                System.err.println("Oooops. SEND.run()");
+            }
+            
+        }
+        
         // try {
         //     // loop over timeout buffer
         //     // send anything timed out
@@ -36,4 +60,5 @@ public class SendThread extends Thread {
         //     System.exit(1);
         // }
     }
+    public void kill() { this.stopped = true; }
 }
