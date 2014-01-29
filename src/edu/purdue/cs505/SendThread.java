@@ -36,13 +36,9 @@ public class SendThread extends Thread {
 
     public void run() {
         while (!stopped) {
-            System.out.println("CHECK! " + stopped);
-            try {
-                Thread.sleep(1000);
-            } catch(InterruptedException e) {
-                System.err.println("Oooops. SEND.run()");
-            }
-            
+            RMessage msg = messageQueue.peek();
+            // long now = System.
+            // while (msg != null && 
         }
         
         // try {

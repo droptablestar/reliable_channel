@@ -14,8 +14,7 @@ public class Node {
         // channel.rlisten(rcr);
         
         // create message with timeou value of current system time.
-        RMessage msg0 = new RMessage(System.currentTimeMillis(),
-                                     "msg0: " + (6666 + port));
+        RMessage msg0 = new RMessage("msg0: " + (6666 + port));
         channel.rsend(msg0);
 
         try {
@@ -23,8 +22,7 @@ public class Node {
         } catch(InterruptedException e) {
             System.out.println("HFDS:");
         }
-        RMessage msg1 = new RMessage(System.currentTimeMillis(),
-                                     "msg1: " + (6666 + port));
+        RMessage msg1 = new RMessage("msg1: " + (6666 + port));
         channel.rsend(msg1);
 
         for (Iterator<RMessage> m = channel.sThread.messageQueue.iterator();

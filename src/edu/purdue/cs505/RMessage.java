@@ -6,8 +6,8 @@ public class RMessage implements Message {
     public long timeout;
     private String message;
 
-    public RMessage(long timeout, String message) {
-        this.timeout = timeout;
+    public RMessage(String message) {
+        this.timeout = System.currentTimeMillis();
         this.message = message;
     }
     
