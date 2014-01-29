@@ -35,6 +35,14 @@ public class ReceiveThread extends Thread {
                 */
                 String msg =
                     new String(packet.getData(), 0, packet.getLength());
+		//build an RMessage out of this bidniss
+		RMessage finalProduct = new RMessage(msg);
+		//if an ACK, put it on the ackList
+		if(finalProduct.isACK == 1){
+			ackList.add(finalProduct.seqNum);
+		}
+		rcr.rreceive(finalProduct);
+		
                 System.out.println("received MSG: " + msg);
             }
         } catch (IOException e) {
