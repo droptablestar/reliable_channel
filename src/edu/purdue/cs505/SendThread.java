@@ -45,13 +45,18 @@ public class SendThread extends Thread {
         while (!stopped) {
             RMessage msg = messageQueue.peek();
             long now = System.currentTimeMillis();
-            while (msg != null && (now - msg.timeout) >= TIMEOUT) {
+            while (msg != null && (now - msg.getTimeout()) >= TIMEOUT) {
                 // send message, create new message, and put it back in queue
                 msg = messageQueue.poll();
 
-                // message was already ACK'd. don't resend.
-                if (ackList.remove(msg)) continue;
-                
+                if (removeACK(msg)) {
+                    System.out.println("REMOVED!!");
+                    msg = messageQueue.peek();
+                    continue;
+                }
+
+                System.out.print("RESENDING");
+                msg.printMsg();
                 send(msg);
                 RMessage newMsg = new RMessage();
                 newMsg.setMessageContents(msg.getMessageContents());
@@ -60,11 +65,25 @@ public class SendThread extends Thread {
             }
             int size = toAck.size();
             RMessage[] tmpToAck = toAck.toArray(new RMessage[]{});
-            /* TODO: send ACKs. they are stored in toAck. */
+            /* send ACKs. they are stored in toAck. */
             for (int i=0; i<size; i++) {
-                RMessage ack = new RMessage(tmpToAck[i].getMessageID());
-                send(ack);
+                tmpToAck[i].makeACK();
+                System.out.print("ACKING");
+                tmpToAck[i].printMsg();
+                send(tmpToAck[i]);
                 toAck.remove(tmpToAck[i]);
+            }
+            while (ackList.size() > 0) {
+                // message was already ACK'd remove from ackList
+                for (Iterator<RMessage> ai = messageQueue.iterator();
+                     ai.hasNext(); ) {
+                    msg = ai.next();
+                    System.out.println("HERE: " + ackList.size());
+                    System.out.println(msg);
+                    if (removeACK(msg)) {
+                        System.out.println("REMOVED!!");
+                    }
+                }
             }
         }
     } // run()
@@ -95,4 +114,18 @@ public class SendThread extends Thread {
             System.err.println("SENDER -- packet send error: " + e);
         }
     } // send()
+
+    private boolean removeACK(RMessage msg) {
+        int size = ackList.size();
+        RMessage[] tmpAckList = ackList.toArray(new RMessage[]{});
+        for (int i=0; i<size; i++) {
+            System.out.println(msg + " " + tmpAckList[i]);
+            if (msg.getMessageID() == tmpAckList[i].getMessageID()) {
+                ackList.remove(i);
+                messageQueue.remove(msg);
+                return true;
+            }
+        }
+        return false;
+    }
 }

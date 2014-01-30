@@ -9,19 +9,14 @@ public class RChannelReceiver implements ReliableChannelReceiver {
     public void rreceive(Message m) {
         RMessage msg = (RMessage)m;
 
-        System.out.println(msg.isACK() + " " + msg.getMessageContents().getBytes()[0]);
+        System.out.print("adding: ");
+        msg.printMsg();
         if (msg.isACK()) {
-            System.out.println("ADDING ACK!!!");
-            try {
-                Thread.sleep(2000);
-            } catch(InterruptedException e) {
-                System.err.println(e);
-            }
             ackList.add(msg);
+            System.out.println("ADDING ACK!!!" + ackList.size());
         }
         else {
-            System.out.print("received: ");
-            msg.printMsg();
+            System.out.println("received!!");
             toAck.add(msg);
         }
     }

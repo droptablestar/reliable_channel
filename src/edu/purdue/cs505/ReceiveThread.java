@@ -26,32 +26,21 @@ public class ReceiveThread extends Thread {
         System.out.println("Receiver: " + portNumber);
         try {
             this.socket = new DatagramSocket(portNumber);
+            // socket.setSoTimeout(1);
             while (true) {
                 byte[] buf = new byte[65536];
                 DatagramPacket packet =
                     new DatagramPacket(buf, buf.length);
                 /* TODO: make this non-blocking??? */
                 socket.receive(packet);
-                // if (!timeout) rcr.rreceive(message)
-                /* TODO: somehow if this message is an ACK put the sequence
-                   number in ackList. i will remove the corresponding message
-                   from the queue and from the ackList. ackList is threadsafe
-                   so dont worry about access ;)
-                */
                 String msg =
                     new String(packet.getData(), 0, packet.getLength());
+
 		//build an RMessage out of this bidniss
 		RMessage finalProduct = new RMessage();
                 finalProduct.setMessageContents(msg);
-                System.out.print("socket: ");
-                finalProduct.printMsg();
                 
-		//if an ACK, put it on the ackList
-		// if(finalProduct.isACK()){
-                //     ackList.add(finalProduct);
-		// }
 		rcr.rreceive(finalProduct);
-                System.exit(1);
             }
         } catch (IOException e) {
             System.err.println("Init error: ServerThread()");
