@@ -18,7 +18,23 @@
       </manifest>
     </jar>
   </target>
-    
+
+  <!-- START DEBUGGING -->
+  <target name="buildd" depends="init" description="Compiles the source code">
+    <javac includeantruntime="false" srcdir="src/"
+	   includes="**/*.java" destdir="classes" />
+  </target>
+
+  <target name="jard" depends="buildd" description="Builds the jar file">
+    <jar destfile="dist/rchannel.jar">
+      <fileset dir="classes"/>
+      <manifest>
+	<attribute name="Main-Class" value="edu.purdue.cs505.Node"/>
+      </manifest>
+    </jar>
+  </target>
+  <!-- END DEBUGGING -->
+
   <target name="doc" description="Produces the Java documentation">
     <mkdir dir="docs"/>
     <javadoc sourcepath="src/" destdir="docs" access="private" />

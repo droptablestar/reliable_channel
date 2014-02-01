@@ -5,13 +5,28 @@ import java.net.*;
 import java.util.List;
 
 public class ReceiveThread extends Thread {
+    /** Socket to use for communication. */
     private DatagramSocket socket;
+
+    /** Port number to bind to. */
     private int portNumber;
+
+    /** RChannelReceiver object to use as a callback. */
     private RChannelReceiver rcr;
     
+    /** List of ACKs received. Shared across threads. */
     private List<RMessage> ackList;
+
+    /** List of ACKs to be sent. Shared across threads. */
     private List<RMessage> toAck;
 
+    /** Constructor for the receive thread. 
+     *
+     * @param portNumber port to bind to.
+     * @param rcr RChannelReceiver callback object.
+     * @param ackList list of ACKs received. Modified by rcr.
+     * @param toAck list of ACKs to be sent. Modified by rcr.
+     */
     public ReceiveThread(int portNumber, RChannelReceiver rcr,
                          List<RMessage> ackList, List<RMessage> toAck) {
         this.portNumber = portNumber;
@@ -20,8 +35,11 @@ public class ReceiveThread extends Thread {
         this.rcr.setToAck(toAck);
         this.ackList = ackList;
         this.toAck = toAck;
-    }
-    
+    } // ReceiveThread()
+
+    /** Main method for receive thread. Waits for new messages then passes
+     * each received message to the callback function for processing.
+     */
     public void run() {
         System.out.println("Receiver: " + portNumber);
         try {
@@ -48,5 +66,5 @@ public class ReceiveThread extends Thread {
             System.exit(1);
         }
         System.out.println("receiver FIN.");
-    }
+    } // run()
 }

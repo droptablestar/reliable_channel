@@ -3,3 +3,5 @@ dist/
 classes/
 #*
 docs
+*txt
+*out

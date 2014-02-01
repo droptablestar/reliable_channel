@@ -5,21 +5,46 @@ import java.net.*;
 import java.util.PriorityQueue;
 import java.util.List;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 public class SendThread extends Thread {
     /** amount of time (in ms) to wait before resending a message */
-    private final long TIMEOUT = 1000;
-    
+    private final long TIMEOUT = 3000;
+
+    /** A list which contains messages the sender needs to send. */
     private PriorityQueue<RMessage> messageQueue;
+
+    /** A list which contains messages the receiver has ACK'd. This is how
+     * messages will be removed from the sender's queue. Shared across
+     * threads. */
     private List<RMessage> ackList;
+
+    /** A list which contains messages the sender thread needs to send ACKs
+     *  for. Shared across threads. */
     private List<RMessage> toAck;
-    
+
+    /** The socket to be used for communication in this thread. */
     private DatagramSocket socket;
+
+    /** The destination IP messages will be sent to. */
     private InetAddress destIP;
+
+    /** The destination port the receiver is using. */
     private int destPort;
 
+    /** Value determining whether or not to continue execution. */
     private boolean stopped;
-    
+
+    /** Constructor for this thread. Initializes all vairables and sets up
+     * the socket for communication.
+     *
+     * @param destIP destination of IP to be used to send
+     * @param destPort port number destination host is using
+     * @param messageQueue priorityQueue of messages, sorted on timeout
+     * @param ackList list of message whos ACK's have already been received
+     * but are still in the sending queue
+     * @param toAck messages that have been received but need ACKs to be sent
+     */
     public SendThread(String destIP, int destPort,
                       PriorityQueue<RMessage> messageQueue,
                       List<RMessage> ackList, List<RMessage> toAck) {
@@ -41,50 +66,45 @@ public class SendThread extends Thread {
         }
     } // SendThread()
 
+    /** Main execution method for send thread. Handles sending all messages. 
+     */
     public void run() {
         while (!stopped) {
             RMessage msg = messageQueue.peek();
             long now = System.currentTimeMillis();
             while (msg != null && (now - msg.getTimeout()) >= TIMEOUT) {
-                // send message, create new message, and put it back in queue
+                // send message, update timeout, and put it back in queue
                 msg = messageQueue.poll();
 
+                // if this message has already been ACK'd, dont send it again.
+                // remove it from the queue
                 if (removeACK(msg)) {
-                    System.out.println("REMOVED!!");
                     msg = messageQueue.peek();
                     continue;
                 }
 
-                System.out.print("RESENDING");
-                msg.printMsg();
                 send(msg);
-                RMessage newMsg = new RMessage();
-                newMsg.setMessageContents(msg.getMessageContents());
-                messageQueue.offer(newMsg);
+                msg.setTimeout();
+                messageQueue.offer(msg);
                 msg = messageQueue.peek();
             }
-            int size = toAck.size();
-            RMessage[] tmpToAck = toAck.toArray(new RMessage[]{});
+            // int size = toAck.size();
+            // RMessage[] tmpToAck = toAck.toArray(new RMessage[]{});
+
             /* send ACKs. they are stored in toAck. */
-            for (int i=0; i<size; i++) {
-                tmpToAck[i].makeACK();
-                System.out.print("ACKING");
-                tmpToAck[i].printMsg();
-                send(tmpToAck[i]);
-                toAck.remove(tmpToAck[i]);
-            }
-            while (ackList.size() > 0) {
-                // message was already ACK'd remove from ackList
-                for (Iterator<RMessage> ai = messageQueue.iterator();
-                     ai.hasNext(); ) {
-                    msg = ai.next();
-                    System.out.println("HERE: " + ackList.size());
-                    System.out.println(msg);
-                    if (removeACK(msg)) {
-                        System.out.println("REMOVED!!");
-                    }
+            synchronized(toAck) {
+                for (Iterator<RMessage> ai=toAck.iterator(); ai.hasNext(); ) {
+                    RMessage m = ai.next();
+                    m.makeACK();
+                    send(m);
+                    ai.remove();
                 }
             }
+            // for (int i=0; i<size; i++) {
+            //     tmpToAck[i].makeACK();
+            //     send(tmpToAck[i]);
+            //     toAck.remove(tmpToAck[i]);
+            // }
         }
     } // run()
 
@@ -115,17 +135,22 @@ public class SendThread extends Thread {
         }
     } // send()
 
+    /** Removes all instances of an ACK from the list of received ACKs.
+     *
+     * @param msg message to check for in the ackList
+     * @return true if something was removed, otherwise false
+     */
     private boolean removeACK(RMessage msg) {
-        int size = ackList.size();
-        RMessage[] tmpAckList = ackList.toArray(new RMessage[]{});
-        for (int i=0; i<size; i++) {
-            System.out.println(msg + " " + tmpAckList[i]);
-            if (msg.getMessageID() == tmpAckList[i].getMessageID()) {
-                ackList.remove(i);
-                messageQueue.remove(msg);
-                return true;
+        boolean removed = false;
+        synchronized(ackList) {
+            for (Iterator<RMessage> ai=ackList.iterator(); ai.hasNext(); ) {
+                RMessage m = ai.next();
+                if (msg.getMessageID() == m.getMessageID()) {
+                    ai.remove();
+                    removed = true;
+                }
             }
         }
-        return false;
+        return removed;
     }
 }

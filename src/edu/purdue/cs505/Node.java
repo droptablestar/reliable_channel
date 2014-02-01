@@ -14,11 +14,11 @@ public class Node {
         channel.rlisten(rcr);
         
         // create message with timeou value of current system time.
-        RMessage msg0 = new RMessage("msg0-->" + (6666 + id));
-        RMessage msg1 = new RMessage("msg1-->" + (6666 + id));
+        // RMessage msg0 = new RMessage("msg0-->" + (6666 + id));
+        // RMessage msg1 = new RMessage("msg1-->" + (6666 + id));
 
-        if (id == 0) 
-            channel.rsend(msg0);
+        // if (id == 0) 
+        //     channel.rsend(msg0);
         
         // System.out.println("MAIN:");
         // for (Iterator<RMessage> m = channel.messageQueue.iterator();
@@ -35,16 +35,20 @@ public class Node {
         // channel.rsend(msg1);
         // System.out.println("main FIN.");
 
-        try {
-            BufferedReader br =
-                new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Enter: ");
-            br.readLine();
-        } catch(IOException e) {
-            System.err.println("IO err: " + e);
+        if (id == 0) {
+            try {
+                BufferedReader br =
+                    new BufferedReader(new InputStreamReader(System.in));
+                String msg;
+                while ((msg = br.readLine()) != null)
+                    channel.rsend(new RMessage(msg));
+                    // System.out.println(msg);
+            } catch(IOException e) {
+                System.err.println("IO err: " + e);
+            }
         }
 
-        System.out.print("\nHALT");
-        channel.halt();
+        System.out.print("\nHALT\n");
+        // channel.halt();
     }
 }
