@@ -1,13 +1,13 @@
 <h2>Compilation</h2>
-<h3>To build the project: </h3>
+<h4>To build the project: </h4>
    ```
    ant build
    ```
-<h2>To build with jar file: </h2>
+<h3>To build with jar file: </h3>
    ```
    ant jar
    ```
-<h2>To create javadocs: </h2>
+<h3>To create javadocs: </h2>
    ```
    ant doc
    ```
