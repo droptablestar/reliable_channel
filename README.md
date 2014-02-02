@@ -1,4 +1,5 @@
-<h2>To build the project: </h2>
+<h2>Compilation</h2>
+<h3>To build the project: </h3>
    ```
    ant build
    ```
@@ -15,5 +16,5 @@
    cat data.txt | java -jar dist/rchannel.jar localhost 0
    cat data.txt | java -jar dist/rchannel.jar localhost 0
    ```
-
+<h2>Data generation and testing:</h2>
 Data generation and evaluation tools can be found in the tests/ directory.
