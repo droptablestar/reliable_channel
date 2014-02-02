@@ -39,7 +39,6 @@ public class ReceiveThread extends Thread {
      * each received message to the callback function for processing.
      */
     public void run() {
-        System.out.println("Receiver: " + portNumber);
         try {
             this.socket = new DatagramSocket(portNumber);
             while (true) {
@@ -47,11 +46,19 @@ public class ReceiveThread extends Thread {
                 DatagramPacket packet =
                     new DatagramPacket(buf, buf.length);
 
-                System.out.println("RECEIVING.");
                 socket.receive(packet);
-                System.out.println("RECEIVed.");
                 String msg =
                     new String(packet.getData(), 0, packet.getLength());
+
+                double rn = Math.random();
+
+                /* This is for testing. Simulates packets being dropped.
+                 */
+                // if (rn >= 0.2) {
+                //     System.out.println("DROPPED: " +
+                //                        msg.substring(0,msg.indexOf(':')));
+                //     continue;
+                // }
 
 		// build an RMessage out of this bidniss
 		RMessage finalProduct = new RMessage();

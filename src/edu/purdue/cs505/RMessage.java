@@ -62,7 +62,7 @@ public class RMessage implements Message {
 
     /** Turns this message into an ACK. */
     public void makeACK() {
-        message = ACK + "" + message.substring(1);
+        message = ACK + "" + message.substring(1,message.indexOf(':') + 1);
     } // makeACK()
 
     /** Prints a message. Used for debugging. */

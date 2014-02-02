@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 public class Node {
     public static void main(String args[]) {
-        System.out.println("Hello, world!");
-
         int id = Integer.parseInt(args[1]);
 
         RChannelReceiver rcr = new RChannelReceiver();
@@ -26,7 +24,6 @@ public class Node {
             }
         }
 
-        System.out.print("\nHALT\n");
         // channel.halt();
 
         // channel.init(args[0], 6666);

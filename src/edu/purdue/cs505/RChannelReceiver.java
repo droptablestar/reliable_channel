@@ -47,7 +47,7 @@ public class RChannelReceiver implements ReliableChannelReceiver {
         if (msg.isACK())   // if message is an ACK add to ackList
             ackList.add(msg);
         else { // else check to see if its already been received
-            if (!hasMsg(msg)) {
+            if (!receivedMsgs.contains(msg.getMessageID())) {
                 // first time a message was received.
                 wr.println(msg.getMessageString());
                 wr.flush();
@@ -66,13 +66,4 @@ public class RChannelReceiver implements ReliableChannelReceiver {
      * @param toAck list to be used.
      */
     public void setToAck(List<RMessage> toAck) { this.toAck = toAck; }
-
-    private boolean hasMsg(RMessage m) {
-        for (Iterator<Integer> ri=receivedMsgs.iterator(); ri.hasNext(); ) {
-            int seqNum = ri.next();
-            if (seqNum == m.getMessageID())
-                return true;
-        }
-        return false;
-    }
 }
