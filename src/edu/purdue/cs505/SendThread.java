@@ -56,7 +56,8 @@ public class SendThread extends Thread {
         
         try {
             this.destIP = InetAddress.getByName(destIP);
-            socket = new DatagramSocket(this.destPort, this.destIP);
+            socket = new DatagramSocket();
+            socket.connect(this.destIP, this.destPort);
         } catch (UnknownHostException e) {
             System.err.println("SENDER -- Host name error: " + e);
             System.exit(1);
