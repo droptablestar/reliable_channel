@@ -88,8 +88,6 @@ public class SendThread extends Thread {
                 messageQueue.offer(msg);
                 msg = messageQueue.peek();
             }
-            // int size = toAck.size();
-            // RMessage[] tmpToAck = toAck.toArray(new RMessage[]{});
 
             /* send ACKs. they are stored in toAck. */
             synchronized(toAck) {
@@ -100,11 +98,6 @@ public class SendThread extends Thread {
                     ai.remove();
                 }
             }
-            // for (int i=0; i<size; i++) {
-            //     tmpToAck[i].makeACK();
-            //     send(tmpToAck[i]);
-            //     toAck.remove(tmpToAck[i]);
-            // }
         }
     } // run()
 
@@ -123,8 +116,6 @@ public class SendThread extends Thread {
     private void send(RMessage msg) {
         try {
             String message = msg.getMessageContents();
-            // System.out.print("sending: ");
-            // msg.printMsg();
             byte[] buf = new byte[message.length()];
             buf = message.getBytes();
             DatagramPacket packet =

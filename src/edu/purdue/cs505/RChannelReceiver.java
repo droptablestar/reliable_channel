@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Iterator;
 
 public class RChannelReceiver implements ReliableChannelReceiver {
     /** List of ACKs received. Shared across threads. */
@@ -15,7 +16,7 @@ public class RChannelReceiver implements ReliableChannelReceiver {
     private List<RMessage> toAck;
 
     /** List of all messages received. */
-    private PriorityQueue<RMessage> receivedMsgs;
+    private PriorityQueue<Integer> receivedMsgs;
 
     /** Object used to write messages to a file. Used for testing and
      * debugging. */
@@ -26,7 +27,7 @@ public class RChannelReceiver implements ReliableChannelReceiver {
      */
     public RChannelReceiver() {
         Comparator<RMessage> comparator = new RMessageComparator();
-        this.receivedMsgs = new PriorityQueue<RMessage>(10, comparator);
+        this.receivedMsgs = new PriorityQueue<Integer>();
 
         try {
             this.wr = new PrintWriter("tests/output.out");
@@ -46,11 +47,11 @@ public class RChannelReceiver implements ReliableChannelReceiver {
         if (msg.isACK())   // if message is an ACK add to ackList
             ackList.add(msg);
         else { // else check to see if its already been received
-            if (!receivedMsgs.contains(msg)) {
+            if (!hasMsg(msg)) {
                 // first time a message was received.
                 wr.println(msg.getMessageString());
                 wr.flush();
-                receivedMsgs.offer(msg);
+                receivedMsgs.offer(msg.getMessageID());
             }
             toAck.add(msg);
         }
@@ -65,4 +66,13 @@ public class RChannelReceiver implements ReliableChannelReceiver {
      * @param toAck list to be used.
      */
     public void setToAck(List<RMessage> toAck) { this.toAck = toAck; }
+
+    private boolean hasMsg(RMessage m) {
+        for (Iterator<Integer> ri=receivedMsgs.iterator(); ri.hasNext(); ) {
+            int seqNum = ri.next();
+            if (seqNum == m.getMessageID())
+                return true;
+        }
+        return false;
+    }
 }

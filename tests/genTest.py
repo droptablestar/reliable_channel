@@ -15,7 +15,7 @@ def main():
     extraChars = ['a']*5000
 
     with open('test.txt', 'w') as f:
-        for line in range(lines)}:
+        for line in range(lines):
             extra = random.randint(0, 5000)
             f.write('message '+str(line)+''.join(extraChars[:extra])+'\n')
 

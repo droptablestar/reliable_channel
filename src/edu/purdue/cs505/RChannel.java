@@ -63,7 +63,6 @@ public class RChannel implements ReliableChannel {
      * @param m the message to be sent.
      */
     public void rsend(Message m) {
-        // put message m in buffer with timed out value.
         messageQueue.offer((RMessage)m);
     } // rsend()
 

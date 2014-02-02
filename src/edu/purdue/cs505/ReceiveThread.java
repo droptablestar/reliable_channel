@@ -33,8 +33,6 @@ public class ReceiveThread extends Thread {
         this.rcr = rcr;
         this.rcr.setAckList(ackList);
         this.rcr.setToAck(toAck);
-        this.ackList = ackList;
-        this.toAck = toAck;
     } // ReceiveThread()
 
     /** Main method for receive thread. Waits for new messages then passes
@@ -44,17 +42,16 @@ public class ReceiveThread extends Thread {
         System.out.println("Receiver: " + portNumber);
         try {
             this.socket = new DatagramSocket(portNumber);
-            // socket.setSoTimeout(1);
             while (true) {
                 byte[] buf = new byte[65536];
                 DatagramPacket packet =
                     new DatagramPacket(buf, buf.length);
-                /* TODO: make this non-blocking??? */
+
                 socket.receive(packet);
                 String msg =
                     new String(packet.getData(), 0, packet.getLength());
 
-		//build an RMessage out of this bidniss
+		// build an RMessage out of this bidniss
 		RMessage finalProduct = new RMessage();
                 finalProduct.setMessageContents(msg);
                 
