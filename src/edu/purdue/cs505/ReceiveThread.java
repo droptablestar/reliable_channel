@@ -47,7 +47,9 @@ public class ReceiveThread extends Thread {
                 DatagramPacket packet =
                     new DatagramPacket(buf, buf.length);
 
+                System.out.println("RECEIVING.");
                 socket.receive(packet);
+                System.out.println("RECEIVed.");
                 String msg =
                     new String(packet.getData(), 0, packet.getLength());
 
