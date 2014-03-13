@@ -11,18 +11,22 @@ public class Node {
         RChannel channel = new RChannel(id);
         channel.init(args[0], 6666);
         channel.rlisten(rcr);
+        if (id == 0)
+            for (int i=0; i<100000; i++)
+                channel.rsend(new RMessage(new Integer(i).toString()));
+
         
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(System.in));
-        if (id == 0) {
-            try {
-                String msg;
-                while ((msg = br.readLine()) != null)
-                    channel.rsend(new RMessage(msg));
-            } catch(IOException e) {
-                System.err.println("IO err: " + e);
-            }
-        }
+        // BufferedReader br =
+        //     new BufferedReader(new InputStreamReader(System.in));
+        // if (id == 0) {
+        //     try {
+        //         String msg;
+        //         while ((msg = br.readLine()) != null)
+        //             channel.rsend(new RMessage(msg));
+        //     } catch(IOException e) {
+        //         System.err.println("IO err: " + e);
+        //     }
+        // }
 
         // channel.halt();
 

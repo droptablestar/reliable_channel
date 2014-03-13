@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class SendThread extends Thread {
     /** amount of time (in ms) to wait before resending a message */
-    private final long TIMEOUT = 3000;
+    private final long TIMEOUT = 500;
 
     /** A list which contains messages the sender needs to send. */
     private PriorityQueue<RMessage> messageQueue;
