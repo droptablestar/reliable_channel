@@ -14,7 +14,7 @@
 <h4>To test project with 2 instances:</h4>
    ```
    cat data.txt | java -jar dist/rchannel.jar localhost 0
-   cat data.txt | java -jar dist/rchannel.jar localhost 0
+   cat data.txt | java -jar dist/rchannel.jar localhost 1
    ```
 <h2>Data generation and testing</h2>
 Data generation and evaluation tools can be found in the tests/ directory. This
